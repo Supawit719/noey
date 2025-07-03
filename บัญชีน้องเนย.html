@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>ระบบบัญชีระดับสูง + ประวัติ</title>
+</head>
+<body>
+  <h2>📘 ระบบวิเคราะห์บัญชี (ระดับปริญญาเอก)</h2>
+
+  <label>ยอดขายรวม (Revenue):</label><br>
+  <input type="number" id="revenue" placeholder="เช่น 100000"><br><br>
+  <button onclick="calculate()">คำนวณ</button>
+
+  <h3>📊 ผลลัพธ์ล่าสุด:</h3>
+  <div id="result"></div>
+
+  <h3>📝 ประวัติการคำนวณ:</h3>
+  <ul id="history"></ul>
+
+  <script>
+    let historyList = [];
+
+    function calculate() {
+      const revenue = parseFloat(document.getElementById("revenue").value);
+      if (isNaN(revenue) || revenue <= 0) {
+        document.getElementById("result").innerHTML = "❌ กรุณาใส่ยอดขายที่ถูกต้อง";
+        return;
+      }
+
+      // Parameters
+      const vatRate = 0.07;
+      const cogsRate = 0.6;
+      const sellingExpRate = 0.1;
+      const adminExpRate = 0.08;
+      const depreciationRate = 0.05;
+      const interestRate = 0.03;
+      const corporateTaxRate = 0.2;
+
+      // คำนวณ
+      const vat = revenue * vatRate;
+      const netRevenue = revenue - vat;
+      const cogs = revenue * cogsRate;
+      const grossProfit = netRevenue - cogs;
+      const sellingExp = revenue * sellingExpRate;
+      const adminExp = revenue * adminExpRate;
+      const depreciation = revenue * depreciationRate;
+      const totalOpExp = sellingExp + adminExp + depreciation;
+      const operatingProfit = grossProfit - totalOpExp;
+      const interest = revenue * interestRate;
+      const ebt = operatingProfit - interest;
+      const corporateTax = ebt * corporateTaxRate;
+      const netProfit = ebt - corporateTax;
+      const assets = revenue;
+      const liabilities = revenue * 0.4;
+      const equity = assets - liabilities;
+
+      // สร้างผลลัพธ์ HTML
+      const output = `
+        <strong>1. รายรับและภาษี:</strong><br>
+        - รายรับรวม (Revenue): ${revenue.toFixed(2)}<br>
+        - VAT (7%): ${vat.toFixed(2)}<br>
+        - รายรับสุทธิ (Net Revenue): ${netRevenue.toFixed(2)}<br><br>
+
+        <strong>2. ต้นทุน:</strong><br>
+        - COGS (60%): ${cogs.toFixed(2)}<br>
+        - กำไรขั้นต้น: ${grossProfit.toFixed(2)}<br><br>
+
+        <strong>3. ค่าใช้จ่าย:</strong><br>
+        - ขาย (10%): ${sellingExp.toFixed(2)}<br>
+        - บริหาร (8%): ${adminExp.toFixed(2)}<br>
+        - ค่าเสื่อม (5%): ${depreciation.toFixed(2)}<br><br>
+
+        <strong>4. กำไร:</strong><br>
+        - Operating Profit: ${operatingProfit.toFixed(2)}<br>
+        - ดอกเบี้ย (3%): ${interest.toFixed(2)}<br>
+        - EBT: ${ebt.toFixed(2)}<br>
+        - ภาษีนิติบุคคล (20%): ${corporateTax.toFixed(2)}<br>
+        - กำไรสุทธิ: ${netProfit.toFixed(2)}<br><br>
+
+        <strong>5. งบดุล:</strong><br>
+        - สินทรัพย์: ${assets.toFixed(2)}<br>
+        - หนี้สิน: ${liabilities.toFixed(2)}<br>
+        - ส่วนของเจ้าของ: ${equity.toFixed(2)}<br>
+      `;
+
+      document.getElementById("result").innerHTML = output;
+
+      // เพิ่มประวัติ
+      const summary = `ยอดขาย: ${revenue.toFixed(2)} | กำไรสุทธิ: ${netProfit.toFixed(2)} | Operating: ${operatingProfit.toFixed(2)}`;
+      historyList.unshift(summary);
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const historyContainer = document.getElementById("history");
+      historyContainer.innerHTML = "";
+      historyList.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        historyContainer.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>
